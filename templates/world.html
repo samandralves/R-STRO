@@ -23,7 +23,9 @@
         {% if elements %}
           <div class="world-labels">
             {% for emoji, label in elements %}
-            <span class="world-badge badge-{{ loop.index }}"><b>{{ emoji }}</b><small>{{ label }}</small></span>
+            <button type="button" class="world-badge badge-{{ loop.index }}" data-emoji="{{ emoji }}" data-label="{{ label }}" data-status="unlocked" aria-label="Ver detalhes: {{ label }}">
+              <b>{{ emoji }}</b><small>{{ label }}</small>
+            </button>
             {% endfor %}
           </div>
         {% endif %}
@@ -40,10 +42,12 @@
       <div class="world-card">
         <p class="eyebrow">SEU RASTRO</p>
         <h2>{{ elements|length }} marcas descobertas.</h2>
-        <p>Continue completando seus 1% para descobrir novos elementos no seu mundo.</p>
+        <p>Continue completando seus 1% para descobrir novos elementos no seu mundo. Toque em cada marca para ver os detalhes.</p>
         <div class="unlocks">
           {% for threshold, emoji, label in [(0,'🌱','Primeiro passo'),(15,'🪴','Constância'),(30,'🌳','Barreira'),(50,'🏡','Seu espaço'),(75,'🐦','Movimento'),(105,'🌸','Florescer')] %}
-          <span class="{{ 'unlocked' if points >= threshold }}"><b>{{ emoji }}</b><small>{{ label }}</small></span>
+          <button type="button" class="{{ 'unlocked' if points >= threshold }}" data-emoji="{{ emoji }}" data-label="{{ label }}" data-threshold="{{ threshold }}" data-status="{{ 'unlocked' if points >= threshold else 'locked' }}" aria-label="Ver detalhes: {{ label }}">
+            <b>{{ emoji }}</b><small>{{ label }}</small>
+          </button>
           {% endfor %}
         </div>
       </div>
@@ -53,4 +57,15 @@
     </aside>
   </div>
 </section>
+
+<div class="world-modal" id="world-modal" hidden>
+  <div class="world-modal-backdrop" data-close></div>
+  <div class="world-modal-card" role="dialog" aria-modal="true" aria-labelledby="world-modal-title">
+    <button type="button" class="world-modal-close" data-close aria-label="Fechar">✕</button>
+    <div class="world-modal-emoji" id="world-modal-emoji"></div>
+    <h3 id="world-modal-title"></h3>
+    <p id="world-modal-desc"></p>
+  </div>
+</div>
 {% endblock %}
+{% block scripts %}<script>RastroWorld.init();</script>{% endblock %}

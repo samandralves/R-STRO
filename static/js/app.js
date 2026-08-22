@@ -202,7 +202,11 @@ const RastroWorld = {
       const status = btn.dataset.status || "unlocked";
       const threshold = btn.dataset.threshold;
 
-      emojiEl.textContent = emoji;
+      if (emoji === "🪴") {
+        emojiEl.innerHTML = '<img src="/static/img/regador-emoji.png" alt="' + label + '" class="badge-icon-img">';
+      } else {
+        emojiEl.textContent = emoji;
+      }
       titleEl.textContent = label;
 
       let desc = "";

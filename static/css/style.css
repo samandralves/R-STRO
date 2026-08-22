@@ -119,3 +119,25 @@ body{
 .talk-option:hover{background:rgba(79,224,179,.12);border-color:rgba(79,224,179,.42);color:#fff}
 .talk-result{margin-top:9px;padding:10px 12px;border-radius:9px;background:rgba(79,224,179,.06);border:1px solid rgba(79,224,179,.13);display:flex;gap:9px;align-items:center}
 .talk-result>span{color:var(--brand);font-size:15px}.talk-result strong{display:block;font-size:9px}.talk-result small{display:block;color:var(--muted);font-size:8px;margin-top:2px}
+/* ---------------- WORLD: interatividade (badges + modal) ---------------- */
+.world-badge{background:none;border:0;cursor:pointer;padding:0;font-family:inherit;color:inherit;transition:.2s}
+.world-badge:hover,.world-badge:focus-visible{transform:translateY(-3px) scale(1.06)}
+.world-badge:focus-visible{outline:2px solid var(--brand);outline-offset:4px;border-radius:8px}
+
+.unlocks button{cursor:pointer;font-family:inherit;transition:.2s}
+.unlocks button:hover,.unlocks button:focus-visible{transform:translateY(-2px);border-color:rgba(79,224,179,.4)}
+.unlocks button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.unlocks button.unlocked:hover{box-shadow:0 0 16px rgba(79,224,179,.18)}
+
+.world-modal{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:20px}
+.world-modal[hidden]{display:none}
+.world-modal-backdrop{position:absolute;inset:0;background:rgba(2,8,18,.72);backdrop-filter:blur(6px)}
+.world-modal-card{position:relative;max-width:340px;width:100%;background:linear-gradient(160deg,rgba(16,41,69,.96),rgba(7,22,40,.97));border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:28px 24px 24px;text-align:center;animation:world-modal-in .18s ease-out}
+@keyframes world-modal-in{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
+.world-modal-close{position:absolute;top:12px;right:12px;background:none;border:0;color:#8b9ab6;font-size:14px;cursor:pointer;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;transition:.2s}
+.world-modal-close:hover{background:rgba(255,255,255,.08);color:#fff}
+.world-modal-emoji{font-size:44px;margin-bottom:10px;filter:drop-shadow(0 0 12px rgba(79,224,179,.35))}
+.world-modal-card h3{font:600 17px "Space Grotesk",sans-serif;color:#fff;margin-bottom:8px}
+.world-modal-card p{font-size:11.5px;line-height:1.6;color:var(--muted)}
+.world-modal-card .world-modal-tag{display:inline-block;margin-top:12px;font-size:9px;padding:5px 10px;border-radius:99px;border:1px solid var(--border);color:#8b9ab6}
+.world-modal-card .world-modal-tag.is-unlocked{color:var(--brand);border-color:rgba(79,224,179,.35)}

@@ -186,6 +186,71 @@ const RastroGoals = {
   },
 };
 
+/* ---------------- WORLD: marcas interativas ---------------- */
+const RastroWorld = {
+  init() {
+    const modal = document.getElementById("world-modal");
+    if (!modal) return;
+
+    const emojiEl = document.getElementById("world-modal-emoji");
+    const titleEl = document.getElementById("world-modal-title");
+    const descEl = document.getElementById("world-modal-desc");
+
+    function openFor(btn) {
+      const emoji = btn.dataset.emoji || "✦";
+      const label = btn.dataset.label || "Marca do mundo";
+      const status = btn.dataset.status || "unlocked";
+      const threshold = btn.dataset.threshold;
+
+      emojiEl.textContent = emoji;
+      titleEl.textContent = label;
+
+      let desc = "";
+      let tagText = "";
+      let tagUnlocked = status === "unlocked";
+
+      if (status === "unlocked") {
+        desc = "Você já descobriu essa marca. Ela apareceu porque você deu um passo de verdade no seu Rastro.";
+        tagText = "descoberta";
+      } else {
+        const remaining = threshold !== undefined ? Math.max(0, Number(threshold)) : null;
+        desc = "Essa marca ainda está escondida no seu mundo. Continue completando seus 1% para desbloqueá-la.";
+        tagText = remaining !== null ? `desbloqueia aos ${remaining} pts` : "bloqueada";
+      }
+
+      descEl.textContent = desc;
+
+      let tagEl = modal.querySelector(".world-modal-tag");
+      if (!tagEl) {
+        tagEl = document.createElement("span");
+        tagEl.className = "world-modal-tag";
+        descEl.insertAdjacentElement("afterend", tagEl);
+      }
+      tagEl.textContent = tagText;
+      tagEl.classList.toggle("is-unlocked", tagUnlocked);
+
+      modal.hidden = false;
+      modal.querySelector(".world-modal-close").focus();
+    }
+
+    function close() {
+      modal.hidden = true;
+    }
+
+    document.querySelectorAll(".world-badge, .unlocks button").forEach((btn) => {
+      btn.addEventListener("click", () => openFor(btn));
+    });
+
+    modal.addEventListener("click", (e) => {
+      if (e.target.closest("[data-close]")) close();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !modal.hidden) close();
+    });
+  },
+};
+
 /* ---------------- SECRET: posts anônimos ---------------- */
 const RastroSecret = {
   init() {

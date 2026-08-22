@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}1%{% endblock %}
+{% block content %}
+<section class="screen one-screen">
+  <div class="screen-heading">
+    <p class="eyebrow sun-text">1%</p>
+    <h1>Seu 1% de hoje</h1>
+    <p>Pequenas ações para ajudar você a dar o primeiro passo.</p>
+  </div>
+
+  <div class="onepct-layout">
+    <div class="onepct-main">
+      <div class="onepct-banner">
+        <span class="big-one">1%</span>
+        <div><strong>Foque em 1 ou 2 ações hoje.</strong><small>Pequeno já é progresso!</small></div>
+        <span class="spark">✦</span>
+      </div>
+
+      <div class="goal-list" id="goal-list">
+        {% for g in goals %}
+        <div class="goal {{ 'done' if g.done }}" data-id="{{ g.id }}" tabindex="0">
+          <span class="goal-emoji">{{ ['🎯','📖','⏱️'][loop.index0] }}</span>
+          <div class="goal-content"><strong>{{ g.text }}</strong><small>{{ g.tag }}</small></div>
+          <span class="goal-points">+{{ 5 if loop.index < 3 else 10 }} pts</span>
+          <span class="goal-check">{{ '✓' if g.done else '' }}</span>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="onepct-stats">
+        <div><small>Seus pontos</small><strong id="points-value">{{ completed * 5 + 20 }} pts</strong></div>
+        <div><small>Seu progresso hoje</small><strong id="progress-text">{{ completed }}/{{ goals|length }} ações</strong><div class="thin-progress"><span id="goal-progress" style="width:{{ (completed / goals|length * 100) if goals else 0 }}%"></span></div></div>
+      </div>
+    </div>
+
+    <aside class="onepct-side">
+      <div class="insight-card">
+        <p class="eyebrow sun-text">SEU CONTEXTO</p>
+        <h2>{{ objective|title }}</h2>
+        <p>O Rastro escolheu essas ações a partir da barreira:</p>
+        <strong>{{ barrier }}</strong>
+      </div>
+      <div class="quote-card side-card">
+        <span>✦</span><p>Você não precisa terminar.<br><strong>Precisa começar.</strong></p>
+      </div>
+    </aside>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}<script>RastroGoals.init();</script>{% endblock %}

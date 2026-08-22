@@ -222,8 +222,10 @@ const RastroWorld = {
 
       let tagEl = modal.querySelector(".world-modal-tag");
       if (!tagEl) {
-        tagEl = document.createElement("span");
+        tagEl = document.createElement("button");
+        tagEl.type = "button";
         tagEl.className = "world-modal-tag";
+        tagEl.setAttribute("data-close", "");
         descEl.insertAdjacentElement("afterend", tagEl);
       }
       tagEl.textContent = tagText;

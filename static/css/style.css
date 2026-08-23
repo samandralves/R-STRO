@@ -140,5 +140,6 @@ body{
 .world-modal-card h3{font:600 17px "Space Grotesk",sans-serif;color:#fff;margin-bottom:8px}
 .world-modal-card p{font-size:11.5px;line-height:1.6;color:var(--muted)}
 .world-modal-card .world-modal-tag{display:inline-block;margin-top:12px;font-size:9px;padding:5px 10px;border-radius:99px;border:1px solid var(--border);color:var(--brand);background:none;font-family:inherit;cursor:pointer;transition:.2s}
-.world-modal-card .world-modal-tag:hover,.world-modal-card .world-modal-tag:focus-visible{color:#fff;border-color:rgba(255,255,255,.3)}
+.world-modal-card .world-modal-tag:hover:not(:disabled),.world-modal-card .world-modal-tag:focus-visible:not(:disabled){color:#fff;border-color:rgba(255,255,255,.3)}
 .world-modal-card .world-modal-tag:focus-visible{outline:2px solid var(--border);outline-offset:2px}
+.world-modal-card .world-modal-tag:disabled{opacity:.45;cursor:not-allowed}

@@ -17,6 +17,7 @@ app.secret_key = "rastro-dev-secret"
 
 STATE = {
     "points": 20,
+    "purchased_elements": [0],
     "completed_steps": 0,
     "barriers_overcome": 2,
     "checkins": 1,
@@ -375,17 +376,18 @@ def build_goals(objective, barrier):
     ]
 
 
-def unlocked_elements(points):
-    return [(emoji, label) for threshold, emoji, label in WORLD_ELEMENTS if points >= threshold]
+def unlocked_elements(points=None):
+    return [(emoji, label) for cost, emoji, label in WORLD_ELEMENTS if cost in STATE["purchased_elements"]]
 
 
 def world_progress(points):
-    thresholds = [threshold for threshold, *_ in WORLD_ELEMENTS]
-    current = max([t for t in thresholds if points >= t], default=0)
-    future = next((t for t in thresholds if t > points), thresholds[-1])
-    if future == current:
+    owned = len(STATE["purchased_elements"])
+    total = len(WORLD_ELEMENTS)
+    if owned >= total:
         return 100, 0
-    return ((points - current) / (future - current)) * 100, future - points
+    locked_costs = sorted(cost for cost, *_ in WORLD_ELEMENTS if cost not in STATE["purchased_elements"])
+    next_cost = locked_costs[0]
+    return (owned / total) * 100, max(0, next_cost - points)
 
 
 def completed_count():
@@ -428,6 +430,7 @@ def world():
         active="world",
         points=STATE["points"],
         elements=unlocked_elements(STATE["points"]),
+        owned_costs=STATE["purchased_elements"],
         progress=progress,
         remaining=remaining,
     )
@@ -549,6 +552,33 @@ def api_goals_toggle():
         "points": STATE["points"],
         "completed": completed_count(),
         "unlocked": len(unlocked_elements(STATE["points"])),
+        "progress": progress,
+        "remaining": remaining,
+    })
+
+
+@app.post("/api/world/buy")
+def api_world_buy():
+    data = request.get_json(force=True)
+    try:
+        cost = int(data.get("cost"))
+    except (TypeError, ValueError):
+        return jsonify({"error": "invalid"}), 400
+
+    match = next((item for item in WORLD_ELEMENTS if item[0] == cost), None)
+    if not match:
+        return jsonify({"error": "not_found"}), 404
+    if cost in STATE["purchased_elements"]:
+        return jsonify({"error": "already_owned"}), 400
+    if STATE["points"] < cost:
+        return jsonify({"error": "insufficient_points"}), 400
+
+    STATE["purchased_elements"].append(cost)
+    progress, remaining = world_progress(STATE["points"])
+    return jsonify({
+        "ok": True,
+        "points": STATE["points"],
+        "label": match[2],
         "progress": progress,
         "remaining": remaining,
     })

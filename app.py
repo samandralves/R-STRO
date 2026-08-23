@@ -45,6 +45,15 @@ WORLD_ELEMENTS = [
     (105, "🌸", "Seu rastro está florescendo"),
 ]
 
+WORLD_ELEMENT_MESSAGES = {
+    0: "Você não precisa ter tudo planejado para começar. O importante é dar o primeiro passo e confiar que cada avanço te levará mais perto do seu objetivo.",
+    15: "Nem todo dia será fácil, mas cada pequeno esforço conta. Continue avançando, porque é a constância de hoje que constrói os resultados de amanhã.",
+    30: "Você enfrentou aquilo que um dia parecia difícil demais. Essa conquista prova que seus limites podem ser apenas o começo de algo maior.",
+    50: "Cada conquista é um passo na direção do seu melhor.",
+    75: "Cada conquista é um passo na direção do seu melhor.",
+    105: "Cada conquista é um passo na direção do seu melhor.",
+}
+
 MOOD_OPTIONS = ["muito mal", "mal", "mais ou menos", "bem", "muito bem"]
 
 OBJECTIVE_RULES = {
@@ -579,6 +588,8 @@ def api_world_buy():
         "ok": True,
         "points": STATE["points"],
         "label": match[2],
+        "emoji": match[1],
+        "message": WORLD_ELEMENT_MESSAGES.get(cost, "Cada conquista é um passo na direção do seu melhor."),
         "progress": progress,
         "remaining": remaining,
     })

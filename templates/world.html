@@ -32,7 +32,7 @@
       </div>
 
       <div class="world-progress-box">
-        <div class="progress-row"><span>Seu progresso</span><strong>{{ points }} pts</strong></div>
+        <div class="progress-row"><span>Seu progresso</span><strong id="world-points">{{ points }} pts</strong></div>
         <div class="progress-track"><span style="width:{{ progress }}%"></span></div>
         <div class="unlock-row"><span>{{ progress|round|int }}%</span><span>{{ remaining }} pts até a próxima marca</span></div>
       </div>
@@ -45,7 +45,7 @@
         <p>Continue completando seus 1% para descobrir novos elementos no seu mundo. Toque em cada marca para ver os detalhes.</p>
         <div class="unlocks">
           {% for threshold, emoji, label in [(0,'🌱','Primeiro passo'),(15,'🪴','Constância'),(30,'🌳','Barreira'),(50,'🏡','Seu espaço'),(75,'🐦','Movimento'),(105,'🌸','Florescer')] %}
-          <button type="button" class="{{ 'unlocked' if points >= threshold }}" data-emoji="{{ emoji }}" data-label="{{ label }}" data-threshold="{{ threshold }}" data-status="{{ 'unlocked' if points >= threshold else 'locked' }}" aria-label="Ver detalhes: {{ label }}">
+          <button type="button" class="{{ 'unlocked' if threshold in owned_costs }}" data-emoji="{{ emoji }}" data-label="{{ label }}" data-threshold="{{ threshold }}" data-status="{{ 'unlocked' if threshold in owned_costs else 'locked' }}" aria-label="Ver detalhes: {{ label }}">
             <b>{% if emoji == '🪴' %}<img src="{{ url_for('static', filename='img/regador-emoji.png') }}" alt="{{ label }}" class="badge-icon-img">{% else %}{{ emoji }}{% endif %}</b><small>{{ label }}</small>
           </button>
           {% endfor %}

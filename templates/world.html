@@ -67,5 +67,23 @@
     <p id="world-modal-desc"></p>
   </div>
 </div>
+
+<div class="world-modal" id="obtido-modal" hidden>
+  <div class="world-modal-backdrop" data-close-obtido></div>
+  <div class="obtido-card" role="dialog" aria-modal="true" aria-labelledby="obtido-title">
+    <button type="button" class="world-modal-close" data-close-obtido aria-label="Fechar">✕</button>
+    <div class="obtido-check">
+      <span class="obtido-spark spark-a">✦</span>
+      <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      <span class="obtido-spark spark-b">✦</span>
+    </div>
+    <h3 id="obtido-title">🍃 Item obtido! 🍃</h3>
+    <div class="obtido-divider"><span>♥</span></div>
+    <div class="obtido-icon-box" id="obtido-icon"></div>
+    <p class="obtido-name" id="obtido-name"></p>
+    <p class="obtido-rarity">Item comum</p>
+    <div class="obtido-quote"><span>✦</span><p id="obtido-message"></p></div>
+  </div>
+</div>
 {% endblock %}
 {% block scripts %}<script>RastroWorld.init();</script>{% endblock %}

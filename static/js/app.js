@@ -196,6 +196,35 @@ const RastroWorld = {
     const titleEl = document.getElementById("world-modal-title");
     const descEl = document.getElementById("world-modal-desc");
 
+    function currentPoints() {
+      const el = document.getElementById("world-points");
+      if (!el) return 0;
+      const match = el.textContent.match(/-?\d+/);
+      return match ? parseInt(match[0], 10) : 0;
+    }
+
+    async function buyItem(cost, tagEl) {
+      tagEl.disabled = true;
+      tagEl.textContent = "obtendo...";
+      try {
+        const res = await fetch("/api/world/buy", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cost: cost }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) {
+          tagEl.textContent = "não foi possível obter";
+          tagEl.disabled = false;
+          return;
+        }
+        location.reload();
+      } catch (err) {
+        tagEl.textContent = "erro de conexão";
+        tagEl.disabled = false;
+      }
+    }
+
     function openFor(btn) {
       const emoji = btn.dataset.emoji || "✦";
       const label = btn.dataset.label || "Marca do mundo";
@@ -210,30 +239,36 @@ const RastroWorld = {
       titleEl.textContent = label;
 
       let desc = "";
-      let tagText = "";
-      let tagUnlocked = status === "unlocked";
+
+      let tagEl = modal.querySelector(".world-modal-tag");
+      if (tagEl) tagEl.remove();
+      tagEl = document.createElement("button");
+      tagEl.type = "button";
+      tagEl.className = "world-modal-tag";
+      descEl.insertAdjacentElement("afterend", tagEl);
 
       if (status === "unlocked") {
         desc = "Você já descobriu essa marca. Ela apareceu porque você deu um passo de verdade no seu Rastro.";
-        tagText = "descoberta";
+        tagEl.textContent = "descoberta";
+        tagEl.classList.add("is-unlocked");
+        tagEl.setAttribute("data-close", "");
       } else {
-        const remaining = threshold !== undefined ? Math.max(0, Number(threshold)) : null;
-        desc = "Essa marca ainda está escondida no seu mundo. Continue completando seus 1% para desbloqueá-la.";
-        tagText = remaining !== null ? `desbloqueia aos ${remaining} pts` : "bloqueada";
+        const cost = threshold !== undefined ? Math.max(0, Number(threshold)) : 0;
+        const balance = currentPoints();
+        desc = "Essa marca ainda não faz parte do seu mundo. Você pode guardar seus pontos e obtê-la quando quiser.";
+        if (balance >= cost) {
+          tagEl.textContent = `obter por ${cost} pts`;
+          tagEl.addEventListener("click", function () {
+            buyItem(cost, tagEl);
+          });
+        } else {
+          tagEl.textContent = `faltam ${cost - balance} pts`;
+          tagEl.disabled = true;
+          tagEl.setAttribute("data-close", "");
+        }
       }
 
       descEl.textContent = desc;
-
-      let tagEl = modal.querySelector(".world-modal-tag");
-      if (!tagEl) {
-        tagEl = document.createElement("button");
-        tagEl.type = "button";
-        tagEl.className = "world-modal-tag";
-        tagEl.setAttribute("data-close", "");
-        descEl.insertAdjacentElement("afterend", tagEl);
-      }
-      tagEl.textContent = tagText;
-      tagEl.classList.toggle("is-unlocked", tagUnlocked);
 
       modal.hidden = false;
       modal.querySelector(".world-modal-close").focus();

@@ -196,6 +196,11 @@ const RastroWorld = {
     const titleEl = document.getElementById("world-modal-title");
     const descEl = document.getElementById("world-modal-desc");
 
+    const obtidoModal = document.getElementById("obtido-modal");
+    const obtidoIcon = document.getElementById("obtido-icon");
+    const obtidoName = document.getElementById("obtido-name");
+    const obtidoMessage = document.getElementById("obtido-message");
+
     function currentPoints() {
       const el = document.getElementById("world-points");
       if (!el) return 0;
@@ -203,7 +208,21 @@ const RastroWorld = {
       return match ? parseInt(match[0], 10) : 0;
     }
 
-    async function buyItem(cost, tagEl) {
+    function showObtido(emoji, label, message) {
+      if (emoji === "🪴") {
+        obtidoIcon.innerHTML = '<img src="/static/img/regador-emoji.png" alt="' + label + '">';
+      } else {
+        obtidoIcon.textContent = emoji;
+      }
+      obtidoName.textContent = label;
+      obtidoMessage.textContent = message;
+
+      modal.hidden = true;
+      obtidoModal.hidden = false;
+      obtidoModal.querySelector(".world-modal-close").focus();
+    }
+
+    async function buyItem(cost, tagEl, emoji, label) {
       tagEl.disabled = true;
       tagEl.textContent = "obtendo...";
       try {
@@ -218,7 +237,7 @@ const RastroWorld = {
           tagEl.disabled = false;
           return;
         }
-        location.reload();
+        showObtido(emoji, label, data.message);
       } catch (err) {
         tagEl.textContent = "erro de conexão";
         tagEl.disabled = false;
@@ -259,7 +278,7 @@ const RastroWorld = {
         if (balance >= cost) {
           tagEl.textContent = `obter por ${cost} pts`;
           tagEl.addEventListener("click", function () {
-            buyItem(cost, tagEl);
+            buyItem(cost, tagEl, emoji, label);
           });
         } else {
           tagEl.textContent = `faltam ${cost - balance} pts`;
@@ -278,6 +297,11 @@ const RastroWorld = {
       modal.hidden = true;
     }
 
+    function closeObtido() {
+      obtidoModal.hidden = true;
+      location.reload();
+    }
+
     document.querySelectorAll(".world-badge, .unlocks button").forEach((btn) => {
       btn.addEventListener("click", () => openFor(btn));
     });
@@ -286,8 +310,13 @@ const RastroWorld = {
       if (e.target.closest("[data-close]")) close();
     });
 
+    obtidoModal.addEventListener("click", (e) => {
+      if (e.target.closest("[data-close-obtido]")) closeObtido();
+    });
+
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && !modal.hidden) close();
+      if (e.key === "Escape" && !obtidoModal.hidden) closeObtido();
     });
   },
 };

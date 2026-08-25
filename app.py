@@ -54,6 +54,15 @@ WORLD_ELEMENT_MESSAGES = {
     105: "Cada conquista é um passo na direção do seu melhor.",
 }
 
+# ---------------- TROCA DE PONTOS: recompensas disponíveis ----------------
+REWARDS = [
+    {"id": "sementes", "emoji": "🌱", "label": "Sementes", "cost": 50},
+    {"id": "decoracoes", "emoji": "🏡", "label": "Decorações", "cost": 80},
+    {"id": "movimentos", "emoji": "🐦", "label": "Movimentos", "cost": 100},
+    {"id": "flores", "emoji": "🌸", "label": "Flores", "cost": 60},
+    {"id": "itens-especiais", "emoji": "🎁", "label": "Itens especiais", "cost": 150},
+]
+
 MOOD_OPTIONS = ["muito mal", "mal", "mais ou menos", "bem", "muito bem"]
 
 OBJECTIVE_RULES = {
@@ -442,6 +451,7 @@ def world():
         owned_costs=STATE["purchased_elements"],
         progress=progress,
         remaining=remaining,
+        rewards=REWARDS,
     )
 
 
@@ -590,6 +600,29 @@ def api_world_buy():
         "label": match[2],
         "emoji": match[1],
         "message": WORLD_ELEMENT_MESSAGES.get(cost, "Cada conquista é um passo na direção do seu melhor."),
+        "progress": progress,
+        "remaining": remaining,
+    })
+
+
+@app.post("/api/rewards/redeem")
+def api_rewards_redeem():
+    """Troca de pontos por uma recompensa (janela 'Troca de Pontos')."""
+    data = request.get_json(force=True)
+    reward_id = data.get("id")
+
+    match = next((r for r in REWARDS if r["id"] == reward_id), None)
+    if not match:
+        return jsonify({"error": "not_found"}), 404
+    if STATE["points"] < match["cost"]:
+        return jsonify({"error": "insufficient_points"}), 400
+
+    STATE["points"] -= match["cost"]
+    progress, remaining = world_progress(STATE["points"])
+    return jsonify({
+        "ok": True,
+        "points": STATE["points"],
+        "reward": match,
         "progress": progress,
         "remaining": remaining,
     })

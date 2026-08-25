@@ -321,6 +321,122 @@ const RastroWorld = {
   },
 };
 
+/* ---------------- WORLD: Troca de Pontos ---------------- */
+const RastroTroca = {
+  init() {
+    const btn = document.getElementById("troca-pontos-btn");
+    const modal = document.getElementById("troca-modal");
+    if (!btn || !modal) return;
+
+    const balanceEl = document.getElementById("troca-balance-value");
+    const costEl = document.getElementById("troca-selected-cost");
+    const giftEl = document.getElementById("troca-selected-gift");
+    const confirmBtn = document.getElementById("troca-confirm-btn");
+    const feedbackEl = document.getElementById("troca-feedback");
+    const rewardButtons = Array.from(modal.querySelectorAll(".troca-reward"));
+
+    let selected = null;
+
+    function currentPoints() {
+      const match = (balanceEl.textContent || "").match(/-?\d+/);
+      return match ? parseInt(match[0], 10) : 0;
+    }
+
+    function syncPoints(points) {
+      balanceEl.textContent = `${points} pts`;
+      const worldPointsEl = document.getElementById("world-points");
+      if (worldPointsEl) worldPointsEl.textContent = `${points} pts`;
+    }
+
+    function selectReward(rewardBtn) {
+      rewardButtons.forEach((b) => b.classList.remove("selected"));
+      rewardBtn.classList.add("selected");
+
+      selected = {
+        id: rewardBtn.dataset.rewardId,
+        cost: Number(rewardBtn.dataset.cost),
+        emoji: rewardBtn.dataset.emoji,
+        label: rewardBtn.dataset.label,
+      };
+
+      costEl.textContent = selected.cost;
+      giftEl.textContent = selected.emoji;
+      feedbackEl.textContent = "";
+      confirmBtn.textContent = "Trocar Pontos";
+      confirmBtn.disabled = currentPoints() < selected.cost;
+    }
+
+    function resetSelection() {
+      selected = null;
+      rewardButtons.forEach((b) => b.classList.remove("selected"));
+      costEl.textContent = "—";
+      giftEl.textContent = "🎁";
+      confirmBtn.textContent = "Trocar Pontos";
+      confirmBtn.disabled = true;
+      feedbackEl.textContent = "";
+    }
+
+    function open() {
+      resetSelection();
+      modal.hidden = false;
+      document.body.classList.add("troca-open");
+      modal.querySelector(".world-modal-close").focus();
+    }
+
+    function close() {
+      modal.hidden = true;
+      document.body.classList.remove("troca-open");
+    }
+
+    async function confirmExchange() {
+      if (!selected || confirmBtn.disabled) return;
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = "trocando...";
+
+      try {
+        const res = await fetch("/api/rewards/redeem", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: selected.id }),
+        });
+        const data = await res.json();
+
+        if (!res.ok || !data.ok) {
+          feedbackEl.textContent = "Não foi possível concluir a troca agora.";
+          confirmBtn.textContent = "Trocar Pontos";
+          confirmBtn.disabled = false;
+          return;
+        }
+
+        syncPoints(data.points);
+        feedbackEl.textContent = `Você recebeu ${data.reward.emoji} ${data.reward.label}!`;
+        confirmBtn.textContent = "Trocar Pontos";
+        confirmBtn.disabled = currentPoints() < selected.cost;
+      } catch (err) {
+        feedbackEl.textContent = "Erro de conexão. Tenta de novo?";
+        confirmBtn.textContent = "Trocar Pontos";
+        confirmBtn.disabled = false;
+      }
+    }
+
+    btn.addEventListener("click", open);
+
+    rewardButtons.forEach((rewardBtn) => {
+      rewardBtn.addEventListener("click", () => selectReward(rewardBtn));
+    });
+
+    confirmBtn.addEventListener("click", confirmExchange);
+
+    modal.addEventListener("click", (e) => {
+      if (e.target.closest("[data-close-troca]")) close();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !modal.hidden) close();
+    });
+  },
+};
+
 /* ---------------- SECRET: posts anônimos ---------------- */
 const RastroSecret = {
   init() {

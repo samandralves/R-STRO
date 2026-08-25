@@ -39,6 +39,11 @@
         <div class="progress-track"><span style="width:{{ progress }}%"></span></div>
         <div class="unlock-row"><span>{{ progress|round|int }}%</span><span>{{ remaining }} pts até a próxima marca</span></div>
       </div>
+
+      <button type="button" class="troca-pontos-btn" id="troca-pontos-btn" aria-haspopup="dialog" aria-controls="troca-modal">
+        <span class="troca-pontos-icon">✦</span>
+        <span>Trocar Pontos</span>
+      </button>
     </div>
 
     <aside class="world-side">
@@ -88,5 +93,65 @@
     <div class="obtido-quote"><span>✦</span><p id="obtido-message"></p></div>
   </div>
 </div>
+
+<div class="world-modal troca-modal-wrap" id="troca-modal" hidden>
+  <div class="world-modal-backdrop" data-close-troca></div>
+  <div class="world-modal-card troca-card" role="dialog" aria-modal="true" aria-labelledby="troca-modal-title">
+    <button type="button" class="world-modal-close" data-close-troca aria-label="Fechar">✕</button>
+
+    <div class="troca-header">
+      <span class="troca-star">✦</span>
+      <h3 id="troca-modal-title">🌿 Troca de Pontos 🌿</h3>
+      <p>Use seus pontos para conquistar recompensas e fazer seu mundo florescer ainda mais!</p>
+    </div>
+
+    <div class="troca-balance-row">
+      <div class="troca-balance">
+        <span class="troca-balance-icon">★</span>
+        <div>
+          <small>SEU SALDO</small>
+          <strong id="troca-balance-value">{{ points }} pts</strong>
+        </div>
+      </div>
+      <div class="troca-hint">
+        <span>🌿</span>
+        <p>Use seus pontos <strong>e colha novas recompensas!</strong></p>
+      </div>
+    </div>
+
+    <div class="troca-exchange">
+      <p class="troca-exchange-title">FAÇA SUA TROCA</p>
+      <div class="troca-exchange-row">
+        <div class="troca-give">
+          <small>VOCÊ DÁ</small>
+          <span class="troca-side-label">SEUS PONTOS</span>
+          <div class="troca-amount"><span class="troca-amount-icon">★</span><strong id="troca-selected-cost">—</strong><span>pts</span></div>
+          <small class="troca-min">Mínimo: 50 pts</small>
+        </div>
+        <div class="troca-arrow">➜</div>
+        <div class="troca-receive">
+          <small>VOCÊ RECEBE</small>
+          <span class="troca-side-label">RECOMPENSA</span>
+          <div class="troca-gift" id="troca-selected-gift">🎁</div>
+        </div>
+      </div>
+      <button type="button" class="troca-confirm-btn" id="troca-confirm-btn" disabled>Trocar Pontos</button>
+      <small class="troca-secure">🛡️ Troca segura e imediata</small>
+    </div>
+
+    <div class="troca-rewards">
+      <p class="troca-rewards-title">O QUE VOCÊ PODE RECEBER</p>
+      <div class="troca-rewards-grid">
+        {% for reward in rewards %}
+        <button type="button" class="troca-reward" data-reward-id="{{ reward.id }}" data-cost="{{ reward.cost }}" data-emoji="{{ reward.emoji }}" data-label="{{ reward.label }}">
+          <span>{{ reward.emoji }}</span><small>{{ reward.label }}</small>
+        </button>
+        {% endfor %}
+      </div>
+    </div>
+
+    <p class="troca-feedback" id="troca-feedback"></p>
+  </div>
+</div>
 {% endblock %}
-{% block scripts %}<script>RastroWorld.init();</script>{% endblock %}
+{% block scripts %}<script>RastroWorld.init();RastroTroca.init();</script>{% endblock %}
